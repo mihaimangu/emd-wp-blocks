@@ -10,6 +10,14 @@
 
 defined('ABSPATH') || exit;
 
+require_once plugin_dir_path(__FILE__) . 'vendor/plugin-update-checker/load-v5p3.php';
+$updateChecker = YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+    'https://github.com/mihaimangu/emd-wp-blocks/',
+    __FILE__,
+    'emd-blocks'
+);
+$updateChecker->setBranch('main');
+
 add_action('init', function () {
 
     // --- Testimonials block ---
