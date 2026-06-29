@@ -2,7 +2,7 @@
 /**
  * Plugin Name: EMD Blocks
  * Description: Custom Gutenberg blocks pentru proiectele EMD.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: Mihai Mangu
  * Author URI: https://mihaimangu.ro
  * Text Domain: emd-blocks
@@ -131,6 +131,23 @@ add_action('init', function () {
         ['emd-gallery-style'],
         filemtime(plugin_dir_path(__FILE__) . 'blocks/gallery/editor.css')
     );
+
+    // --- Test block ---
+
+    wp_register_script(
+        'emd-test-block-editor',
+        plugin_dir_url(__FILE__) . 'blocks/test-block/index.js',
+        ['wp-blocks', 'wp-element'],
+        filemtime(plugin_dir_path(__FILE__) . 'blocks/test-block/index.js'),
+        true
+    );
+
+    register_block_type('emd/test-block', [
+        'editor_script'   => 'emd-test-block-editor',
+        'render_callback' => function () {
+            return '<p style="padding:20px;background:#f0f0f0;text-align:center;">✅ EMD Blocks v1.2.0 — update funcționează!</p>';
+        },
+    ]);
 
     // --- Why Choose Us block ---
 
