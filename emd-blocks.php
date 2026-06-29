@@ -2,7 +2,7 @@
 /**
  * Plugin Name: EMD Blocks
  * Description: Custom Gutenberg blocks pentru proiectele EMD.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Mihai Mangu
  * Author URI: https://mihaimangu.ro
  * Text Domain: emd-blocks
@@ -132,6 +132,45 @@ add_action('init', function () {
         filemtime(plugin_dir_path(__FILE__) . 'blocks/gallery/editor.css')
     );
 
+    // --- Why Choose Us block ---
+
+    wp_register_script(
+        'emd-why-choose-us-editor',
+        plugin_dir_url(__FILE__) . 'blocks/why-choose-us/index.js',
+        ['wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components'],
+        filemtime(plugin_dir_path(__FILE__) . 'blocks/why-choose-us/index.js'),
+        true
+    );
+
+    wp_register_style(
+        'emd-why-choose-us-style',
+        plugin_dir_url(__FILE__) . 'blocks/why-choose-us/style.css',
+        [],
+        filemtime(plugin_dir_path(__FILE__) . 'blocks/why-choose-us/style.css')
+    );
+
+    register_block_type('emd/why-choose-us', [
+        'editor_script'   => 'emd-why-choose-us-editor',
+        'style'           => 'emd-why-choose-us-style',
+        'attributes'      => [
+            'sectionLabel' => ['type' => 'string', 'default' => 'Produse handmade cu dragoste și grijă'],
+            'sectionTitle' => ['type' => 'string', 'default' => 'De Ce să Alegi Aroma Momentelor?'],
+            'intro'        => ['type' => 'string', 'default' => 'La Aroma Momentelor, realizăm produse handmade care aduc căldură, parfum și bucurie în casa ta.'],
+            'btnText'      => ['type' => 'string', 'default' => 'CUMPĂRAȚI ACUM'],
+            'btnUrl'       => ['type' => 'string', 'default' => '/shop'],
+            'features'     => [
+                'type'    => 'array',
+                'default' => [
+                    ['iconUrl' => '', 'iconId' => 0, 'title' => '100% Natural', 'text' => 'Produse handmade realizate din ingrediente pure și naturale, pentru o casă sănătoasă și parfumată.'],
+                    ['iconUrl' => '', 'iconId' => 0, 'title' => 'Creații unice, originale', 'text' => 'Produse handmade speciale, create pentru a aduce frumusețe și personalitate fiecărui moment.'],
+                    ['iconUrl' => '', 'iconId' => 0, 'title' => 'Pasiune în fiecare produs', 'text' => 'Fiecare creație este realizată cu grijă și dedicare, aducând bucurie și frumusețe în casa ta.'],
+                ],
+                'items'   => ['type' => 'object'],
+            ],
+        ],
+        'render_callback' => 'emd_render_why_choose_us',
+    ]);
+
     register_block_type('emd/gallery', [
         'editor_script'   => 'emd-gallery-editor',
         'editor_style'    => 'emd-gallery-editor-style',
@@ -162,6 +201,42 @@ add_action('init', function () {
         'render_callback' => 'emd_render_gallery',
     ]);
 });
+
+// -------------------------------------------------------------------------
+// Why Choose Us render
+// -------------------------------------------------------------------------
+function emd_render_why_choose_us($attributes) {
+    $label    = esc_html($attributes['sectionLabel'] ?? '');
+    $title    = esc_html($attributes['sectionTitle'] ?? '');
+    $intro    = esc_html($attributes['intro'] ?? '');
+    $btn_text = esc_html($attributes['btnText'] ?? '');
+    $btn_url  = esc_url($attributes['btnUrl'] ?? '#');
+    $features = $attributes['features'] ?? [];
+
+    ob_start();
+    ?>
+    <div class="am-left">
+        <span class="am-label"><?php echo $label; ?></span>
+        <h2 class="am-title"><?php echo $title; ?></h2>
+        <p class="am-intro"><?php echo $intro; ?></p>
+
+        <?php foreach ($features as $f) : ?>
+        <div class="am-feature">
+            <?php if (!empty($f['iconUrl'])) : ?>
+                <img src="<?php echo esc_url($f['iconUrl']); ?>" alt="">
+            <?php endif; ?>
+            <div>
+                <div class="am-feature-title"><?php echo esc_html($f['title']); ?></div>
+                <p class="am-feature-text"><?php echo esc_html($f['text']); ?></p>
+            </div>
+        </div>
+        <?php endforeach; ?>
+
+        <a href="<?php echo $btn_url; ?>" class="am-btn"><?php echo $btn_text; ?></a>
+    </div>
+    <?php
+    return ob_get_clean();
+}
 
 // -------------------------------------------------------------------------
 // Testimonials render
